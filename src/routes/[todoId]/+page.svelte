@@ -1,25 +1,23 @@
-<script>
+<script lang="ts">
     import { todoStore } from "$lib/stores/todos.svelte";
     import { page } from "$app/state";
-    import { error } from "@sveltejs/kit";
     import CommentComponent from "$lib/components/CommentComponent.svelte";
 	import Spinner from "$lib/components/Spinner.svelte";
+	import { browser } from "$app/environment";
     let { data } = $props();
+	let comments = $state(data.comments);
 
-    const todo = todoStore.todos.find(todo => todo.id == page.params.todoId);
-
-    if (!todo) {
-        error(404, 'Todo not found');
-    }
+    let todo:any;
+    if (browser) todo = todoStore.todos.find(todo => todo.id == page.params.todoId);
 </script>
-<h1>{todo.title}</h1>
-<div class={todo.completed ? "done" : "dont"}>
+<h1>{todo?.title}</h1>
+<div class={todo?.completed ? "done" : "dont"}>
 </div>
 <ul>
-    {#each data.comments as comment (comment.id)}
+    {#each comments as comment (comment.id)}
         <CommentComponent {...comment}/>
     {/each}
-    <Spinner/>
+    <Spinner bind:comments/>
 </ul>
 <style>
     .done {
